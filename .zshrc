@@ -9,11 +9,11 @@ fi
 source ~/.zplug/init.zsh
 zplug "plugins/git",  from:oh-my-zsh, as:plugin
 zplug "plugins/colored-man-pages",  from:oh-my-zsh, as:plugin
-zplug "zsh-users/zsh-syntax-highlighting"
+#zplug "zsh-users/zsh-syntax-highlighting"
 zplug "zsh-users/zsh-history-substring-search"
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-zplug "denysdovhan/spaceship-prompt", use:spaceship.zsh, from:github, as:theme
+bindkey "$terminfo[kcuu1]" history-substring-search-up
+bindkey "$terminfo[kcud1]" history-substring-search-down
+#zplug "denysdovhan/spaceship-prompt", use:spaceship.zsh, from:github, as:theme
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
     printf "Install? [y/N]: "
@@ -24,7 +24,6 @@ fi
 # Source plugins and add commands to $PATH
 # zplug load --verbose
 zplug load
-
 
 # ------------------------------------
 # Default editor
@@ -52,10 +51,21 @@ else
 fi
 # Fuzzy finder `skim`
 if [ -x "$(command -v sk)" ]; then
+    export SKIM_DEFAULT_COMMAND="rg --files"
+    export SKIM_DEFAULT_OPTIONS="--height=20% --layout=reverse"
+    # shell key bindings imported from `fzf`
+    source "$HOME/.skim/shell/key-bindings.zsh"
     # Fuzzy find history w/ `Ctrl + R`
-    bindkey -s "^r" "history 1 | sk --height=20%\n"
+    # bindkey -s "^r" "history 1 | sk\n"
+    # bindkey -s "^t" "sk\n"
 else
     echo "Install https://github.com/lotabout/skim a fuzzy finder tool!🔦" 
+fi
+# Fast autojumper `z`
+if [ -x "$(command -v pazi)" ]; then
+    eval "$(pazi init zsh)" # or 'bash'
+else
+    echo "Install https://github.com/euank/pazi a fast autojump helper ⚡️" 
 fi
 
 alias vimrc="vim ~/.vimrc"
@@ -67,3 +77,12 @@ alias src="source ~/.zshrc"
 # -----------------------------------
 # Configure your current shell for cargo
 source $HOME/.cargo/env
+
+# ------------------------------------
+if [ -x "$(command -v starship)" ]; then
+    export STARSHIP_CONFIG=~/.starship.toml
+    eval "$(starship init zsh)"
+else
+    echo "Install https://starship.rs/guide/#%F0%9F%9A%80-installation a cool prompt 🚀"
+fi
+
